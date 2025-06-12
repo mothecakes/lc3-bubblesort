@@ -1,5 +1,8 @@
 .orig x3000
 
+; in progress function for input gathering
+; TODO: implement enter functionality (end input when enter is pressed)
+; - input checking
 IN
 add r2, r2, r0      ;copy input into r2
 ld r3, ASCII
@@ -32,6 +35,10 @@ ldi  r1, digit2      ; digit2 = MULTby10(digit2);
 jsr MULTby10
 sti r0, digit2
 
+
+; =======================================
+; SUM utility routine for input
+; just adds all the digits once they've been properly converted
 SUM 
 ldi r0, digit1
 ldi r1, digit2
@@ -40,10 +47,14 @@ and r4, r4, x0
 add r4, r4, r0
 add r4, r4, r1
 add r4, r4, r2
-str r4, sum
+str r4, num_sum
 
 halt
+;=========================================
 
+;==========================================
+; utility function for input
+; works fine, no need to change
 MULTby10      ; result in r0 input in r1
 st r2, saveReg2
 st r3, saveReg3
@@ -67,14 +78,14 @@ MULT_DONE
 ld r2, saveReg2
 ld r3, saveReg3
 ret
-
+;==============================================
 
 ASCII .fill #-48
 
 digit1 .fill x3150
 digit2 .fill x3151
 digit3 .fill x3152
-sum .fill x3153
+num_sum .fill x3153
 saveReg2 .fill x0
 saveReg3 .fill x0
 .end

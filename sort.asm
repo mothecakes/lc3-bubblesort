@@ -1,4 +1,11 @@
 .orig x3000
+; FILE for final product
+; code here doesn't work right now, so dont bother to try and make it work
+; needs to be redesigned
+; make sure when developing features, you test it out in small scale first in another file to make it work
+; first and then when it works there, then you can implement it into here
+
+
 MAIN
     INIT                ; user must supply 8 values to sort
     ld r1, num1         ; r1 = base address
