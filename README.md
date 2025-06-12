@@ -10,4 +10,7 @@ Phase II: Prototyping
 - Using assembly simulator, subroutines were individually prototyped and tested
 
 Phase III: Assemble 
+- sort subroutine implements the Bubble sort algorithm
+- demonstrates understanding of basic LC3 techniques such as stack, input gathering, etc.
+
 
