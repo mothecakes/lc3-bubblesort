@@ -1,5 +1,5 @@
 .orig x3000
-
+ORIGINATION
 ; === beginning of program
 ; right now this just initializes values in memory from x3150-3157 with some numbers in order to test
 ; feel free to change the values if you want
@@ -9,39 +9,67 @@ ld r6, stack_top  ; initialize stack pointer
 and r0, r0, x0      ;init counter for input      
 sti r0, main_count  
 
-INPUT_LOOP      
-  ldi r0, main_count   
-  and r3, r3, x0
-  add r3, r3, #-8
+;INPUT_LOOP      
+;  ldi r0, main_count   
+;  and r3, r3, x0
+;  add r3, r3, #-8
+;
+;  add r3, r0, r3
+;  brzp INPUT_LOOP_BREAK
+;
+;  jsr INPUT
+;  INPUT_LOOP_INCREMENT
+;  ldi r0, main_count
+;  add r0, r0, x1
+;  sti r0, main_count 
+;  br INPUT_LOOP
 
-  add r3, r0, r3
-  brzp INPUT_LOOP_BREAK
+;INPUT_LOOP_BREAK
 
-  jsr INPUT
-  INPUT_LOOP_INCREMENT
-  ldi r0, main_count
-  add r0, r0, x1
-  sti r0, main_count 
-  br INPUT_LOOP
+ld r0, num
 
-INPUT_LOOP_BREAK
+and r1, r1, x0
+add r1, r1, #11
+str r1, r0, x0
 
-  jsr SORT  ; takes no parameters and should leave a sorted array in memory
+and r1, r1, x0
+add r1, r1, #8
+str r1, r0, x1
 
+and r1, r1, x0
+add r1, r1, #2
+str r1, r0, x2
 
+and r1, r1, x0
+add r1, r1, xf
+add r1, r1, x2
+str r1, r0, x3
 
+and r1, r1, x0
+add r1, r1, x6
+str r1, r0, x4
 
-; used to test input for swap.
-; this swaps the 4th and 5th element
-;and r0, r0, x0
-;add r0, r0, x4 ; index 4
-;jsr SWAP 
+and r1, r1, x0
+add r1, r1, x4
+str r1, r0, x5
+
+and r1, r1, x0
+add r1, r1, x3
+str r1, r0, x6
+
+and r1, r1, x0
+add r1, r1, xf
+add r1, r1, x6
+str r1, r0, x7
+
+jsr SORT  ; takes no parameters and should leave a sorted array in memory
+
 
 ; end of program
 END
   halt
 
-
+; ==========================================
 ; ===============================================================
 SORT 
 
@@ -211,112 +239,112 @@ SWAP    ; count = r0
   ; when enter is pressed, all current digits are summed up
   ; and stored into its place in memory base + count
   ; 
-INPUT
-  add r6, r6, #-1
-  str r7, r6, #0
-
-  jsr SAVE_REG
-
-  sti r0, input_count
-
-INPUT_FIRST_NUM
-  lea r0, enter_num
-  puts              ;display prompt
-  getc              ;get char
-  out               ;echo
-
-;; INPUT VALIDATION PORTION
-  add r2, r0, x0    ; copy input to r2
-  ld r0, char_enter ; check if num is enter
-  add r0, r2, r0    
-  brz INPUT_DONE    ; skip to end
-  ld r0, char_zero  ;
-  add r0, r2, r0    ; if ascii of num is less than ascii 0 
-  brn INPUT_ERROR_1 ; 
-  ld r0, char_nine
-  add r0, r2, r0    ; if ascii of num is greather than ascii 9
-  brp INPUT_ERROR_1 ;
-
-  ld r3, ASCIItoI   ; convert from ascii to Integer
-  add r2, r2, r3    ; r2 = num 1
-
-  sti r2, digit1    ; store digit1 in ones place
-
-INPUT_SECOND_NUM
-  getc
-  out
-
-  ;; INPUT VALIDATION PORTION
-  add r2, r0, x0    ; copy input to r2
-  ld r0, char_enter ; check if num is enter
-  add r0, r2, r0    
-  brz INPUT_DONE    ; skip to end
-  ld r0, char_zero  ;
-  add r0, r2, r0    ; if ascii of num is less than ascii 0 
-  brn INPUT_ERROR_1 ; 
-  ld r0, char_nine
-  add r0, r2, r0    ; if ascii of num is greather than ascii 9
-  brp INPUT_ERROR_1 ;
-
-  ld r3, ASCIItoI   ; convert from ascii to Integer
-  add r2, r2, r3    ; r2 = num 1
-
-  sti r2, digit2    ; store digit2 in ones place
-
-  ldi r1, digit1    ; shift digit1 to tens place
-  jsr MULTby10      ; MULTby10(r1 = num) -> r0
-  sti r0, digit1
-
-
-INPUT_THIRD_NUM
-  getc
-  out
-
-;; INPUT VALIDATION PORTION
-  add r2, r0, x0    ; copy input to r2
-  ld r0, char_enter ; check if num is enter
-  add r0, r2, r0    
-  brz INPUT_DONE    ; skip to end
-  ld r0, char_zero  ;
-  add r0, r2, r0    ; if ascii of num is less than ascii 0 
-  brn INPUT_ERROR_1 ; 
-  ld r0, char_nine
-  add r0, r2, r0    ; if ascii of num is greather than ascii 9
-  brp INPUT_ERROR_1 ;
-
-  ld r3, ASCIItoI   ; convert from ascii to Integer
-  add r2, r2, r3    ; r2 = num 1
-
-  sti r2, digit3    ; store digit3 in ones place
-
-  ldi r1, digit1    ; shift digit1 to hundreds place
-  jsr MULTby10      ; MULTby10(r1 = num) -> r0
-  sti r0, digit1
-
-  ldi r1, digit2    ; shift digit2 to tens place
-  jsr MULTby10      ; MULTby10(r1 = num) -> r0
-  sti r0, digit2
-
-
-INPUT_DONE
-
-  jsr SUM
-  ld r1, num
-  ldi r2, input_count
-  add r1, r1, r2
-  str r0, r1, x0  ; load sum into base + count
-
-  ldr r7, r6, x0      ;pop stack
-  add r6, r6, x1
-  ret
-
-INPUT_ERROR_1 
-  lea r0, enter_err ;; error message
-  puts
-  ldr r7, r6, x0      ;pop stack
-  add r6, r6, x1
-  ret ; end program
-
+;INPUT
+;  add r6, r6, #-1
+;  str r7, r6, #0
+;
+;  jsr SAVE_REG
+;
+;  sti r0, input_count
+;
+;INPUT_FIRST_NUM
+;  lea r0, enter_num
+;  puts              ;display prompt
+;  getc              ;get char
+;  out               ;echo
+;
+;;; INPUT VALIDATION PORTION
+;  add r2, r0, x0    ; copy input to r2
+;  ld r0, char_enter ; check if num is enter
+;  add r0, r2, r0    
+;  brz INPUT_DONE    ; skip to end
+;  ld r0, char_zero  ;
+;  add r0, r2, r0    ; if ascii of num is less than ascii 0 
+;  brn INPUT_ERROR_1 ; 
+;  ld r0, char_nine
+;  add r0, r2, r0    ; if ascii of num is greather than ascii 9
+;  brp INPUT_ERROR_1 ;
+;
+;  ld r3, ASCIItoI   ; convert from ascii to Integer
+;  add r2, r2, r3    ; r2 = num 1
+;
+;  sti r2, digit1    ; store digit1 in ones place
+;
+;INPUT_SECOND_NUM
+;  getc
+;  out
+;
+;  ;; INPUT VALIDATION PORTION
+;  add r2, r0, x0    ; copy input to r2
+;  ld r0, char_enter ; check if num is enter
+;  add r0, r2, r0    
+;  brz INPUT_DONE    ; skip to end
+;  ld r0, char_zero  ;
+;  add r0, r2, r0    ; if ascii of num is less than ascii 0 
+;  brn INPUT_ERROR_1 ; 
+;  ld r0, char_nine
+;  add r0, r2, r0    ; if ascii of num is greather than ascii 9
+;  brp INPUT_ERROR_1 ;
+;
+;  ld r3, ASCIItoI   ; convert from ascii to Integer
+;  add r2, r2, r3    ; r2 = num 1
+;
+;  sti r2, digit2    ; store digit2 in ones place
+;
+;  ldi r1, digit1    ; shift digit1 to tens place
+;  jsr MULTby10      ; MULTby10(r1 = num) -> r0
+;  sti r0, digit1
+;
+;
+;INPUT_THIRD_NUM
+;  getc
+;  out
+;
+;;; INPUT VALIDATION PORTION
+;  add r2, r0, x0    ; copy input to r2
+;  ld r0, char_enter ; check if num is enter
+;  add r0, r2, r0    
+;  brz INPUT_DONE    ; skip to end
+;  ld r0, char_zero  ;
+;  add r0, r2, r0    ; if ascii of num is less than ascii 0 
+;  brn INPUT_ERROR_1 ; 
+;  ld r0, char_nine
+;  add r0, r2, r0    ; if ascii of num is greather than ascii 9
+;  brp INPUT_ERROR_1 ;
+;
+;  ld r3, ASCIItoI   ; convert from ascii to Integer
+;  add r2, r2, r3    ; r2 = num 1
+;
+;  sti r2, digit3    ; store digit3 in ones place
+;
+;  ldi r1, digit1    ; shift digit1 to hundreds place
+;  jsr MULTby10      ; MULTby10(r1 = num) -> r0
+;  sti r0, digit1
+;
+;  ldi r1, digit2    ; shift digit2 to tens place
+;  jsr MULTby10      ; MULTby10(r1 = num) -> r0
+;  sti r0, digit2
+;
+;
+;INPUT_DONE
+;
+;  jsr SUM
+;  ld r1, num
+;  ldi r2, input_count
+;  add r1, r1, r2
+;  str r0, r1, x0  ; load sum into base + count
+;
+;  ldr r7, r6, x0      ;pop stack
+;  add r6, r6, x1
+;  ret
+;
+;INPUT_ERROR_1 
+;  lea r0, enter_err ;; error message
+;  puts
+;  ldr r7, r6, x0      ;pop stack
+;  add r6, r6, x1
+;  ret ; end program
+;
 ; =======================================
 ; SUM utility routine for input
 ; just adds all the digits once they've been properly converted to r0
@@ -421,7 +449,6 @@ enter_num .stringz "Enter a num 1-999: "
 enter_err .stringz "invalid input retry"
 
 ASCIItoI .fill #-48
-ItoASCII .fill #48
 
 char_enter .fill #-10
 char_zero .fill #-48
